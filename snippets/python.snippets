@@ -1,242 +1,466 @@
 snippet #!
 	#!/usr/bin/env python
-	# -*- coding: utf-8 -*-
-snippet #!3
-	#!/usr/bin/env python3
-	# -*- coding: utf-8 -*-
+	#-*- coding: gb18030 -*-
+
 snippet imp
-	import ${0:module}
-snippet uni
-	def __unicode__(self):
-		${0:representation}
-snippet from
-	from ${1:package} import ${0:module}
+	import ${1:module}
 # Module Docstring
 snippet docs
-	"""
-	File: ${1:`vim_snippets#Filename('$1.py', 'foo.py')`}
-	Author: `g:snips_author`
-	Email: `g:snips_email`
-	Github: `g:snips_github`
-	Description: ${0}
-	"""
+	"""${3:description}
 
+	File: ${1:`Filename('$1.py', 'foo.py')`}
+	Author: ${2:`g:snips_author`}
+	Date: `strftime("%Y-%m-%d %H:%M:%S")`
+	"""
 snippet wh
 	while ${1:condition}:
-		${0}
-# dowh - does the same as do...while in other languages
-snippet dowh
-	while True:
-		${1}
-		if ${0:condition}:
-			break
-snippet with
-	with ${1:expr} as ${2:var}:
-		${0}
+		${2:# code...}
+snippet for
+	for ${1:needle} in ${2:haystack}:
+		${3:# code...}
 # New Class
 snippet cl
 	class ${1:ClassName}(${2:object}):
-		"""${3:docstring for $1}"""
+		"""${3:$1}
+		
+		Attributes:
+		"""
 		def __init__(self, ${4:arg}):
-			${5:super($1, self).__init__()}
+			"""
+			Args:
+				$4
+			Raises: ${5:None}
+			"""
+			${6:super($1, self).__init__()}
 			self.$4 = $4
-			${0}
+			${7}
 # New Function
 snippet def
-	def ${1:fname}(${2:`indent('.') ? 'self' : ''`}):
-		"""${3:docstring for $1}"""
-		${0}
-snippet deff
-	def ${1:fname}(${2:`indent('.') ? 'self' : ''`}):
-		${0}
+	def ${1:fname}(`indent('.') ? 'self, ' : ''`${2:params}):
+		"""${3:$1}
+		
+		Args:
+			$2
+		Returns:
+			${4:value_or_type} 
+		Raises: ${5:None}
+		"""
+		${6:pass}
 # New Method
-snippet defm
-	def ${1:mname}(self, ${2:arg}):
-		${0}
+snippet defs
+	@staticmethod
+	def ${1:fname}(${2:arg}):
+		"""static method. ${3:$1}
+		
+		Args:
+			$2
+		Returns:
+			${4} 
+		Raises: ${5:None}
+		"""
+		${6:pass}
 # New Property
 snippet property
 	def ${1:foo}():
 		doc = "${2:The $1 property.}"
 		def fget(self):
-			${3:return self._$1}
+			${3:return self.__$1}
 		def fset(self, value):
-			${4:self._$1 = value}
-		def fdel(self):
-			${0:del self._$1}
-		return locals()
-	$1 = property(**$1())
-# Ifs
-snippet if
-	if ${1:condition}:
-		${0}
-snippet el
-	else:
-		${0}
-snippet ei
-	elif ${1:condition}:
-		${0}
-# For
-snippet for
-	for ${1:item} in ${2:items}:
-		${0}
-# Encodes
-snippet cutf8
-	# -*- coding: utf-8 -*-
-snippet clatin1
-	# -*- coding: latin-1 -*-
-snippet cascii
-	# -*- coding: ascii -*-
+			${4:self.__$1 = value}
 # Lambda
 snippet ld
-	${1:var} = lambda ${2:vars} : ${0:action}
+	${1:var} = lambda ${2:vars} : ${3:action}
 snippet .
 	self.
 snippet try Try/Except
 	try:
-		${1}
+		${1:pass}
 	except ${2:Exception}, ${3:e}:
-		${0:raise $3}
+		${4:raise $3}
 snippet try Try/Except/Else
 	try:
-		${1}
+		${1:pass}
 	except ${2:Exception}, ${3:e}:
 		${4:raise $3}
 	else:
-		${0}
+		${5:pass}
 snippet try Try/Except/Finally
 	try:
-		${1}
+		${1:pass}
 	except ${2:Exception}, ${3:e}:
 		${4:raise $3}
 	finally:
-		${0}
+		${5:pass}
 snippet try Try/Except/Else/Finally
 	try:
-		${1}
+		${1:pass}
 	except ${2:Exception}, ${3:e}:
 		${4:raise $3}
 	else:
-		${5}
+		${5:pass}
 	finally:
-		${0}
+		${6:pass}
 # if __name__ == '__main__':
 snippet ifmain
 	if __name__ == '__main__':
-		${0:main()}
+		${1:main()}
 # __magic__
 snippet _
-	__${1:init}__
-# python debugger (pdb)
-snippet pdb
-	import pdb
-	pdb.set_trace()
-# bpython debugger (bpdb)
-snippet bpdb
-	import bpdb
-	bpdb.set_trace()
-# ipython debugger (ipdb)
-snippet ipdb
-	import ipdb
-	ipdb.set_trace()
-# embed ipython itself
-snippet iem
-	import IPython
-	IPython.embed()
-# ipython debugger (pdbbb)
-snippet pdbbb
-	import pdbpp
-	pdbpp.set_trace()
-# remote python debugger (rpdb)
-snippet rpdb
-	import rpdb
-	rpdb.set_trace()
-# ptpython
-snippet ptpython
-	from ptpython.repl import embed
-	embed(globals(), locals(), vi_mode=${1:False}, history_filename=${2:None})
-# python console debugger (pudb)
-snippet pudb
-	import pudb
-	pudb.set_trace()
-# pdb in nosetests
-snippet nosetrace
-	from nose.tools import set_trace
-	set_trace()
-snippet pprint
-	import pprint
-	pprint.pprint(${1})
-snippet "
-	"""${0:doc}
+	__${1:init}__${2}
+snippet log
+	logging.basicConfig(level=logging.DEBUG,
+						format='%(levelname)s: %(asctime)s %(filename)s[line:%(lineno)d]'
+							   ' [%(process)d] %(message)s',
+						datefmt='%m-%d %H:%M:%S',
+						filename=None,
+						filemode='a')
+# env for __init__.py file
+snippet ienv
+	# -*- coding:gb18030 -*-
+	##########################################################
+	# Copyright (c) `strftime("%Y")` Baidu.com, Inc. All Rights Reserved #
+	##########################################################
+
+	"""${1:description}
+
+	Filname: `expand("%:t")`
+	Authors: ZhangAo(@baidu.com)
+	Date: `strftime("%Y-%m-%d %H:%M:%S")`
 	"""
-# assertions
-snippet a=
-	self.assertEqual(${0}, ${1})
-# test function/method
-snippet test
-	def test_${1:description}(${2:`indent('.') ? 'self' : ''`}):
-		${0}
-# test case
-snippet testcase
-	class ${1:ExampleCase}(unittest.TestCase):
 
-		def test_${2:description}(self):
-			${0}
-snippet fut
-	from __future__ import ${0}
-#getopt
-snippet getopt
-	try:
-		# Short option syntax: "hv:"
-		# Long option syntax: "help" or "verbose="
-		opts, args = getopt.getopt(sys.argv[1:], "${1:short_options}", [${2:long_options}])
+	import ${2}
+# env for bigflow code
+snippet blib
+	#!/usr/bin/env ${1:pyrun}
+	# -*- coding:gb18030 -*-
+	##########################################################
+	# Copyright (c) `strftime("%Y")` Baidu.com, Inc. All Rights Reserved #
+	##########################################################
 
-	except getopt.GetoptError, err:
-		# Print debug info
-		print str(err)
-		${3:error_action}
+	"""${2:description}
 
-	for option, argument in opts:
-		if option in ("-h", "--help"):
-			${0}
-		elif option in ("-v", "--verbose"):
-			verbose = argument
-# logging
-# glog = get log
-snippet glog
+	Filname: `expand("%:t")`
+	Authors: ZhangAo(@baidu.com)
+	Date: `strftime("%Y-%m-%d %H:%M:%S")`
+	"""
+
+	import sys
+	import os
+	import traceback
 	import logging
-	logger = logging.getLogger(${0:__name__})
-snippet le
-	logger.error(${0:msg})
-# conflict with lambda=ld, therefor we change into Logger.debuG
-snippet lg
-	logger.debug(${0:msg})
-snippet lw
-	logger.warning(${0:msg})
-snippet lc
-	logger.critical(${0:msg})
-snippet li
-	logger.info(${0:msg})
-snippet epydoc
-	"""${1:Description}
+	${3}
+	
+# env for bigflow code
+snippet bcmd
+	#!/usr/bin/env ${1:pyrun}
+	# -*- coding:gb18030 -*-
+	##########################################################
+	# Copyright (c) `strftime("%Y")` Baidu.com, Inc. All Rights Reserved #
+	##########################################################
 
-	@param ${2:param}: ${3: Description}
-	@type  $2: ${4: Type}
+	"""${2:description}
 
-	@return: ${5: Description}
-	@rtype : ${6: Type}
-
-	@raise e: ${0: Description}
+	Filname: `expand("%:t")`
+	Authors: ZhangAo(@baidu.com)
+	Date: `strftime("%Y-%m-%d %H:%M:%S")`
 	"""
-snippet dol
-	def ${1:__init__}(self, *args, **kwargs):
-	    super(${0:ClassName}, self).$1(*args, **kwargs)
-snippet kwg
-	self.${1:var_name} = kwargs.get('$1', ${2:None})
-snippet lkwg
-	${1:var_name} = kwargs.get('$1', ${2:None})
-snippet args
-	*args${1:,}${0}
-snippet kwargs
-	**kwargs${1:,}${0}
-snippet akw
-	*args, **kwargs${1:,}${0}
+
+	import sys
+	import os
+	import traceback
+	import logging
+
+	from bigflow import base
+	from bigflow import transforms
+	from bigflow import input
+	from bigflow import output
+	
+	from bigflow_utils import BigflowUtils
+	from autoopt_basic import common_arg_parser
+	from autoopt_basic import parse_args
+	from autoopt_basic import hdfs_workroot
+
+	def create_arg_parser(argv):
+		"""create_arg_parser
+		
+		Args: argv      list of args
+
+		Returns:
+			an arp-parser 
+
+		Raises: error of arg_parser.parse_args()
+		"""
+		arg_parser = common_arg_parser(description="$2")
+		#arg_parser.add_argument('...')
+		args = parse_args(arg_parser, argv)
+		return args
+
+
+	def create_pipeline(args):
+		"""create_pipeline
+		
+		Args:
+			args    args result of argparser
+
+		Returns:
+			a pipeline of bigflow 
+
+		Raises: None
+
+		Exit:
+			-1 		if get run mode failed
+		"""
+		pipeline_params = {}
+		if args.is_local:
+			pipeline_params['pipeline_type'] = "LOCAL"
+		elif args.is_hadoop:
+			pipeline_params['pipeline_type'] = "HADOOP"
+			pipeline_params['default_concurrency'] = 997
+			pipeline_params['hadoop_job_conf'] = {
+					"mapred.job.map.capacity": "1000",
+					"mapred.job.reduce.capacity": "1000",
+					"mapred.job.priority" : "NORMAL",
+					"abaci.dag.datasize.per.reduce": str(1000 * 1000 * 10),
+					"mapred.job.name": "zhangao-job",
+			}
+
+			pipeline_params['tmp_data_path'] = ${3:'/app/ecom/fcr-opt/zhangao}/tmp'
+		else:
+			logging.critical("bigflow run mode setting error")
+			exit(-1)
+
+		# create a pipeline
+		pipeline = BigflowUtils.create_pipeline(**pipeline_params)
+		return pipeline
+
+	if __name__ == "__main__":
+		try:
+			args = create_arg_parser(sys.argv[1:])
+			pipeline = create_pipeline(args)
+			BigflowUtils.add_lib("BigflowUtils", pipeline)
+			BigflowUtils.add_lib("autoopt_basic", pipeline)
+
+			pc_input = pipeline.read(input.TextFile(args.inpath))\
+					   .map(lambda x: x.rstrip().split('\t'))
+			${4}
+
+			pipeline.write(pc_output, output.TextFile(args.outpath))
+
+			BigflowUtils.autorun()
+		except Exception as e:
+			logging.critical(traceback.format_exc())
+			exit(-1)
+		
+snippet env
+	#!/usr/bin/env python
+	# -*- coding:gb18030 -*-
+	##########################################################
+	# Copyright (c) `strftime("%Y")` Baidu.com, Inc. All Rights Reserved #
+	##########################################################
+
+	"""${1:description}
+
+	Filname: `expand("%:t")`
+	Authors: ZhangAo(@baidu.com)
+	Date: `strftime("%Y-%m-%d %H:%M:%S")`
+	"""
+
+	import sys
+	import os
+	import traceback
+	import logging
+	logging.basicConfig(level=logging.DEBUG,
+						format='%(levelname)s: %(asctime)s %(filename)s[line:%(lineno)d]'
+							   ' [%(process)d] %(message)s',
+						datefmt='%m-%d %H:%M:%S',
+						filename=None,
+						filemode='a')
+	
+	from autoopt_basic import common_arg_parser
+	from autoopt_basic import parse_args
+
+	def create_arg_parser(argv):
+		"""create_arg_parser
+		
+		Args: argv      list of args
+
+		Returns:
+			an arp-parser 
+
+		Raises: error of arg_parser.parse_args()
+		"""
+		arg_parser = common_arg_parser(description="$1")
+		#arg_parser.add_argument('...')
+		args = parse_args(arg_parser, argv)
+		return args
+
+
+	if __name__ == "__main__":
+		try:
+			args = create_arg_parser(sys.argv[1:])
+			${2}
+		except Exception as e:
+			logging.critical(traceback.format_exc())
+			exit(-1)
+
+snippet utenv
+	#!/usr/bin/env ${1:python}
+	# -*- coding:gb18030 -*-
+	##########################################################
+	# Copyright (c) `strftime("%Y")` Baidu.com, Inc. All Rights Reserved #
+	##########################################################
+
+	"""unittest of $3
+
+	Filname: `expand("%:t")`
+	Authors: ZhangAo(@baidu.com)
+	Date: `strftime("%Y-%m-%d %H:%M:%S")`
+	"""
+
+	import sys
+	import os
+	import traceback
+	import logging
+	import unittest
+
+	sys.path.insert(0, '${2:..}')
+	import ${3:module_to_be_tested}
+	sys.path.pop(0)
+
+	${4}
+
+	if __name__ == "__main__":
+		logging.basicConfig(level=logging.DEBUG,
+							format='%(levelname)s: %(asctime)s %(filename)s[line:%(lineno)d]'
+								   ' [%(process)d] %(message)s',
+							datefmt='%m-%d %H:%M:%S,%m',
+							filename=None,
+							filemode='a')
+
+		unittest.main()
+snippet pipeline
+	def create_pipeline(args):
+		"""create_pipeline
+		
+		Args:
+			args    args result of argparser
+
+		Returns:
+			a pipeline of bigflow 
+
+		Raises: None
+
+		Exit:
+			-1 		if get run mode failed
+		"""
+		pipeline_params = {}
+		if args.is_local:
+			pipeline_params['pipeline_type'] = "LOCAL"
+		elif args.is_hadoop:
+			pipeline_params['pipeline_type'] = "HADOOP"
+			pipeline_params['tmp_data_path'] = hdfs_workroot() + '/tmp'
+		else:
+			logging.critical("bigflow run mode setting error")
+			exit(-1)
+
+		# create a pipeline
+		pipeline = BigflowUtils.create_pipeline(**pipeline_params)
+		return pipeline
+
+snippet arg
+	from argparse import ArgumentParser
+	arg_parser = ArgumentParser(description="${1}")
+	arg_parser.add_argument("input", nargs="?", help="input file path")
+	arg_parser.add_argument("-o", "--output", dest="output", help="output file path")${2}
+	args = arg_parser.parse_args()
+snippet fs
+	ifs = None
+	ofs = None
+	if args.${1:input} is None:
+		logging.info("<input> is None. using stdin instead.")
+		ifs = sys.stdin
+	elif os.path.isfile(args.$1):
+		ifs = open(args.$1, 'r')
+	else:
+		logging.critical("input file is not exist: [%s]" % args.$1)
+		exit(-1)
+	if args.${2:output} is None:
+		logging.info("<output> is None. using stdout instead.")
+		ofs = sys.stdout
+	else:
+		ofs = open(args.$2, 'w')
+
+	${3}
+
+	ifs.close()
+	ofs.close()
+snippet stderr
+	sys.stderr.write("${1}\n")${2}
+snippet forline
+	for line in ifs:
+		fields = line.rstrip().split('${1:\t}')
+		${2}
+snippet forl
+	for line in ifs:
+		fields = line.rstrip().split('${1:\t}')
+		${2}
+snippet count
+		line_count += 1
+		if line_count % ${1:10000} == 0:
+			sys.stderr.write("\r>>> processed \033[1;31;40m%d\033[0m lines."%(line_count))
+	sys.stderr.write("\r>>> done! totally processed \033[1;31;40m%d\033[0m lines.\n"%(line_count))
+	${2}
+snippet forc
+	line_count = 0
+	for line in ifs:
+		fields = line.rstrip().split('${1:\t}')
+		${3}
+		line_count += 1
+		if line_count % ${2:10000} == 0:
+			sys.stderr.write("\r>>> processed \033[1;31;40m%d\033[0m lines."%(line_count))
+	sys.stderr.write("\r>>> done! totally processed \033[1;31;40m%d\033[0m lines.\n"%(line_count))
+snippet group
+	group = grouper.Grouper(ifs)
+	while group.has_next():
+		key = group.get_key()
+		${1}
+		while group.key_same():
+			value = group.next_value()
+			${2}
+snippet group2
+	group = grouper.Grouper(ifs)
+	while group.has_next():
+		key, value = group.next_group()
+		${1}
+snippet joint
+	'\t'.join([${1}])${2}
+snippet prtkv
+	ofs.write("%s\t%s\n" % (${1}, '${2:\t}'.join(${3})))${4}
+snippet prtkv2
+	ofs.write("%s\t%s\n" % ('${1:_}'.join([${2}]), '${3:\t}'.join([${4}])))${5}
+snippet pjoin
+	ofs.write('\t'.join([${1}]) + '\n')${2}
+snippet ut
+	class UT${1:ClassName}(unittest.TestCase):
+		"""unittest class of $1"""
+
+		def setUp(self):
+			${2:pass}
+
+		def tearDown(self):
+			${3:pass}
+
+		def test_${4:function_name}(self):
+			"""test function of $4"""
+			${5:pass}
+snippet deft
+	def test_${1:function_name}(self):
+		"""test function of $1"""
+		${2:pass}
+# import bigflow
+snippet impb
+	from bigflow import base
+	from bigflow import transforms
+	from bigflow import input
+	from bigflow import output
+	${1}
