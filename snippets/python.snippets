@@ -237,7 +237,7 @@ snippet bcmd
 		try:
 			args = create_arg_parser(sys.argv[1:])
 			pipeline = create_pipeline(args)
-			BigflowUtils.add_lib("BigflowUtils", pipeline)
+			BigflowUtils.add_lib("bigflow_utils", pipeline)
 			BigflowUtils.add_lib("autoopt_basic", pipeline)
 
 			pc_input = pipeline.read(input.TextFile(args.inpath))\
