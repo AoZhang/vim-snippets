@@ -237,7 +237,7 @@ snippet bcmd
 		try:
 			args = create_arg_parser(sys.argv[1:])
 			pipeline = create_pipeline(args)
-			BigflowUtils.add_lib("BigflowUtils", pipeline)
+			BigflowUtils.add_lib("bigflow_utils", pipeline)
 			BigflowUtils.add_lib("autoopt_basic", pipeline)
 
 			pc_input = pipeline.read(input.TextFile(args.inpath))\
@@ -290,7 +290,7 @@ snippet env
 		Raises: error of arg_parser.parse_args()
 		"""
 		arg_parser = common_arg_parser(description="$1")
-		#arg_parser.add_argument('...')
+		#arg_parser.add_argument('-x')
 		args = parse_args(arg_parser, argv)
 		return args
 
@@ -376,7 +376,7 @@ snippet arg
 snippet fs
 	ifs = None
 	ofs = None
-	if args.${1:input} is None:
+	if args.${1:inpath} is None:
 		logging.info("<input> is None. using stdin instead.")
 		ifs = sys.stdin
 	elif os.path.isfile(args.$1):
@@ -384,7 +384,7 @@ snippet fs
 	else:
 		logging.critical("input file is not exist: [%s]" % args.$1)
 		exit(-1)
-	if args.${2:output} is None:
+	if args.${2:outpath} is None:
 		logging.info("<output> is None. using stdout instead.")
 		ofs = sys.stdout
 	else:
@@ -396,10 +396,6 @@ snippet fs
 	ofs.close()
 snippet stderr
 	sys.stderr.write("${1}\n")${2}
-snippet forline
-	for line in ifs:
-		fields = line.rstrip().split('${1:\t}')
-		${2}
 snippet forl
 	for line in ifs:
 		fields = line.rstrip().split('${1:\t}')

@@ -7,7 +7,7 @@ priority -50
 #! header
 snippet #! "Shebang header for python scripts" b
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# -*- coding: gb18030 -*-
 $0
 endsnippet
 
@@ -25,6 +25,12 @@ endsnippet
 snippet for "for loop" b
 for ${1:item} in ${2:iterable}:
 	${3:${VISUAL:pass}}
+endsnippet
+
+snippet forl
+	for line in ifs:
+		fields = line.rstrip().split('${1:\t}')
+		${2}
 endsnippet
 
 ##########
@@ -276,7 +282,6 @@ write_init_body(args, t[2], snip)
 		$0
 endsnippet
 
-
 snippet slotclass "class with slots and docstrings" b
 class ${1:MyClass}(${2:object}):
 
@@ -304,6 +309,21 @@ write_init_body(args, t[2], snip)
 		$0
 endsnippet
 
+
+# New Method
+snippet defs
+@staticmethod
+def ${1:fname}(${2:arg}):
+	"""static method. ${3:$1}
+	
+	Args:
+		$2
+	Returns:
+		${4} 
+	Raises: ${5:None}
+	"""
+	${6:pass}
+endsnippet
 
 snippet contain "methods for emulating a container type" b
 def __len__(self):
@@ -703,5 +723,318 @@ snippet pmdoc "pocoo style module doc string" b
 """
 $0
 endsnippet
+
+
+####################### some user defined snippets
+
+snippet log
+logging.basicConfig(level=logging.DEBUG,
+					format='%(levelname)s: %(asctime)s %(filename)s[line:%(lineno)d]'
+                           ' [%(process)d] %(message)s',
+					datefmt='%m-%d %H:%M:%S',
+					filename=None,
+					filemode='a')
+endsnippet
+
+# env for __init__.py file
+snippet ienv
+# -*- coding:gb18030 -*-
+##########################################################
+# Copyright (c) `strftime("%Y")` Baidu.com, Inc. All Rights Reserved #
+##########################################################
+
+"""${1:description}
+
+Filname: `expand("%:t")`
+Authors: ZhangAo(@baidu.com)
+Date: `strftime("%Y-%m-%d %H:%M:%S")`
+"""
+
+import ${2}
+endsnippet
+
+# env for bigflow code
+snippet blib
+#!/usr/bin/env ${1:pyrun}
+# -*- coding:gb18030 -*-
+##########################################################
+# Copyright (c) `strftime("%Y")` Baidu.com, Inc. All Rights Reserved #
+##########################################################
+
+"""${2:description}
+
+Filname: `expand("%:t")`
+Authors: ZhangAo(@baidu.com)
+Date: `strftime("%Y-%m-%d %H:%M:%S")`
+"""
+
+import sys
+import os
+import traceback
+import logging
+${3}
+
+endsnippet
+
+# env for bigflow code
+snippet bcmd
+#!/usr/bin/env ${1:pyrun}
+# -*- coding:gb18030 -*-
+##########################################################
+# Copyright (c) `strftime("%Y")` Baidu.com, Inc. All Rights Reserved #
+##########################################################
+
+"""${2:description}
+
+Filname: `expand("%:t")`
+Authors: ZhangAo(@baidu.com)
+Date: `strftime("%Y-%m-%d %H:%M:%S")`
+"""
+
+import sys
+import os
+import traceback
+import logging
+
+from bigflow import base
+from bigflow import transforms
+from bigflow import input
+from bigflow import output
+
+from bigflow_utils import BigflowUtils
+from autoopt_basic import common_arg_parser
+from autoopt_basic import parse_args
+from autoopt_basic import hdfs_workroot
+
+def create_arg_parser(argv):
+	"""create_arg_parser
+	
+	Args: argv      list of args
+
+	Returns:
+		an arp-parser 
+
+	Raises: error of arg_parser.parse_args()
+	"""
+	arg_parser = common_arg_parser(description="$2")
+	#arg_parser.add_argument('...')
+	args = parse_args(arg_parser, argv)
+	return args
+
+
+def create_pipeline(args):
+	"""create_pipeline
+	
+	Args:
+		args    args result of argparser
+
+	Returns:
+		a pipeline of bigflow 
+
+	Raises: None
+
+	Exit:
+		-1 		if get run mode failed
+	"""
+	pipeline_params = {}
+	if args.is_local:
+		pipeline_params['pipeline_type'] = "LOCAL"
+	elif args.is_hadoop:
+		pipeline_params['pipeline_type'] = "HADOOP"
+		pipeline_params['default_concurrency'] = 997
+		pipeline_params['hadoop_job_conf'] = {
+				"mapred.job.map.capacity": "1000",
+				"mapred.job.reduce.capacity": "1000",
+				"mapred.job.priority" : "NORMAL",
+				"abaci.dag.datasize.per.reduce": str(1000 * 1000 * 10),
+				"mapred.job.name": "zhangao-job",
+		}
+
+		pipeline_params['tmp_data_path'] = ${3:'/app/ecom/fcr-opt/zhangao}/tmp'
+	else:
+		logging.critical("bigflow run mode setting error")
+		exit(-1)
+
+	# create a pipeline
+	pipeline = BigflowUtils.create_pipeline(**pipeline_params)
+	return pipeline
+
+if __name__ == "__main__":
+	try:
+		args = create_arg_parser(sys.argv[1:])
+		pipeline = create_pipeline(args)
+		BigflowUtils.add_lib("bigflow_utils", pipeline)
+		BigflowUtils.add_lib("autoopt_basic", pipeline)
+
+		pc_input = pipeline.read(input.TextFile(args.inpath))\
+				   .map(lambda x: x.rstrip().split('\t'))
+		${4}
+
+		pipeline.write(pc_output, output.TextFile(args.outpath))
+
+		BigflowUtils.autorun()
+	except Exception as e:
+		logging.critical(traceback.format_exc())
+		exit(-1)
+	
+endsnippet
+
+snippet env
+#!/usr/bin/env python
+# -*- coding:gb18030 -*-
+##########################################################
+# Copyright (c) `strftime("%Y")` Baidu.com, Inc. All Rights Reserved #
+##########################################################
+
+"""${1:description}
+
+Filname: `expand("%:t")`
+Authors: ZhangAo(@baidu.com)
+Date: `strftime("%Y-%m-%d %H:%M:%S")`
+"""
+
+import sys
+import os
+import traceback
+import logging
+logging.basicConfig(level=logging.DEBUG,
+					format='%(levelname)s: %(asctime)s %(filename)s[line:%(lineno)d]'
+						   ' [%(process)d] %(message)s',
+					datefmt='%m-%d %H:%M:%S',
+					filename=None,
+					filemode='a')
+
+from autoopt_basic import common_arg_parser
+from autoopt_basic import parse_args
+
+def create_arg_parser(argv):
+	"""create_arg_parser
+	
+	Args: argv      list of args
+
+	Returns:
+		an arp-parser 
+
+	Raises: error of arg_parser.parse_args()
+	"""
+	arg_parser = common_arg_parser(description="$1")
+	#arg_parser.add_argument('-x')
+	args = parse_args(arg_parser, argv)
+	return args
+
+
+if __name__ == "__main__":
+	try:
+		args = create_arg_parser(sys.argv[1:])
+		${2}
+	except Exception as e:
+		logging.critical(traceback.format_exc())
+		exit(-1)
+
+endsnippet
+
+snippet utenv
+#!/usr/bin/env ${1:python}
+# -*- coding:gb18030 -*-
+##########################################################
+# Copyright (c) `strftime("%Y")` Baidu.com, Inc. All Rights Reserved #
+##########################################################
+
+"""unittest of $3
+
+Filname: `expand("%:t")`
+Authors: ZhangAo(@baidu.com)
+Date: `strftime("%Y-%m-%d %H:%M:%S")`
+"""
+
+import sys
+import os
+import traceback
+import logging
+import unittest
+
+sys.path.insert(0, '${2:..}')
+import ${3:module_to_be_tested}
+sys.path.pop(0)
+
+${4}
+
+if __name__ == "__main__":
+	logging.basicConfig(level=logging.DEBUG,
+						format='%(levelname)s: %(asctime)s %(filename)s[line:%(lineno)d]'
+							   ' [%(process)d] %(message)s',
+						datefmt='%m-%d %H:%M:%S,%m',
+						filename=None,
+						filemode='a')
+
+	unittest.main()
+endsnippet
+
+snippet pipeline
+def create_pipeline(args):
+	"""create_pipeline
+	
+	Args:
+		args    args result of argparser
+
+	Returns:
+		a pipeline of bigflow 
+
+	Raises: None
+
+	Exit:
+		-1 		if get run mode failed
+	"""
+	pipeline_params = {}
+	if args.is_local:
+		pipeline_params['pipeline_type'] = "LOCAL"
+	elif args.is_hadoop:
+		pipeline_params['pipeline_type'] = "HADOOP"
+		pipeline_params['tmp_data_path'] = hdfs_workroot() + '/tmp'
+	else:
+		logging.critical("bigflow run mode setting error")
+		exit(-1)
+
+	# create a pipeline
+	pipeline = BigflowUtils.create_pipeline(**pipeline_params)
+	return pipeline
+
+endsnippet
+
+snippet arg
+from argparse import ArgumentParser
+arg_parser = ArgumentParser(description="${1}")
+arg_parser.add_argument("input", nargs="?", help="input file path")
+arg_parser.add_argument("-o", "--output", dest="output", help="output file path")${2}
+args = arg_parser.parse_args()
+endsnippet
+
+snippet fs
+ifs = None
+ofs = None
+if args.${1:inpath} is None:
+	logging.info("<input> is None. using stdin instead.")
+	ifs = sys.stdin
+elif os.path.isfile(args.$1):
+	ifs = open(args.$1, 'r')
+else:
+	logging.critical("input file is not exist: [%s]" % args.$1)
+	exit(-1)
+if args.${2:outpath} is None:
+	logging.info("<output> is None. using stdout instead.")
+	ofs = sys.stdout
+else:
+	ofs = open(args.$2, 'w')
+
+${3}
+
+ifs.close()
+ofs.close()
+endsnippet
+
+snippet stderr
+sys.stderr.write("${1}\n")${2}
+endsnippet
+
 
 # vim:ft=snippets:
