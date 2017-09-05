@@ -28,9 +28,15 @@ for ${1:item} in ${2:iterable}:
 endsnippet
 
 snippet forl
+<<<<<<< HEAD
 for line in ifs:
 	fields = line.rstrip().split('${1:\t}')
 	${2}
+=======
+	for line in ifs:
+		fields = line.rstrip().split('${1:\t}')
+		${2}
+>>>>>>> 92e0b7676e38292c769a8caea2c5850290039324
 endsnippet
 
 ##########
