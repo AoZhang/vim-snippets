@@ -7,7 +7,7 @@ priority -50
 #! header
 snippet #! "Shebang header for python scripts" b
 #!/usr/bin/env python
-# -*- coding: gb18030 -*-
+# -*- coding: utf8 -*-
 $0
 endsnippet
 
@@ -27,9 +27,9 @@ for ${1:item} in ${2:iterable}:
 	${3:${VISUAL:pass}}
 endsnippet
 
-snippet forl
+snippet forl "for each line" b
 for line in ifs:
-	fields = line.rstrip().split('${1:\t}')
+	lst_fields = line.rstrip().split('${1:\t}')
 	${2}
 endsnippet
 
@@ -151,6 +151,15 @@ def format_return(style):
 		return "Returns: TODO"
 
 
+def format_raise(style):
+	if style == DOXYGEN:
+		return "@raise: TODO"
+	elif style in (NORMAL, SPHINX, JEDI):
+		return ":raises: TODO"
+	elif style == GOOGLE:
+		return "Raises: TODO"
+
+
 def write_docstring_args(args, snip):
 	if not args:
 		snip.rv += ' {0}'.format(triple_quotes(snip))
@@ -249,6 +258,14 @@ def write_function_docstring(t, snip):
 	else:
 		snip += format_return(style)
 	snip.rv += '\n' + snip.mkline('', indent='')
+
+	if style == NUMPY:
+		snip += 'Raises'
+		snip += '-------'
+		snip += 'TODO'
+	else:
+		snip += format_raise(style)
+	snip.rv += '\n' + snip.mkline('', indent='')
 	snip += triple_quotes(snip)
 
 def get_dir_and_file_name(snip):
@@ -266,7 +283,7 @@ class ${1:MyClass}(${2:object}):
 	`!p snip.rv = triple_quotes(snip)`${3:Docstring for $1. }`!p snip.rv = triple_quotes(snip)`
 
 	def __init__(self$4):
-		`!p snip.rv = triple_quotes(snip)`${5:TODO: to be defined1.}`!p
+		`!p snip.rv = triple_quotes(snip)`${5:TODO: to be defined.}`!p
 snip.rv = ""
 snip >> 2
 
@@ -310,20 +327,35 @@ write_init_body(args, t[2], snip)
 endsnippet
 
 
-# New Method
-snippet defs
-@staticmethod
-def ${1:fname}(${2:arg}):
-	"""static method. ${3:$1}
-	
-	Args:
-		$2
-	Returns:
-		${4} 
-	Raises: ${5:None}
-	"""
-	${6:pass}
+snippet def "function with docstrings" b
+def ${1:function}(`!p
+if snip.indent:
+	snip.rv = 'self' + (", " if len(t[2]) else "")`${2:arg1}):
+	`!p snip.rv = triple_quotes(snip)`${4:TODO: Docstring for $1.}`!p
+write_function_docstring(t, snip) `
+	${5:${VISUAL:pass}}
 endsnippet
+
+
+snippet defc "class method with docstrings" b
+@classmethod
+def ${1:function}(`!p
+if snip.indent:
+	snip.rv = 'cls' + (", " if len(t[2]) else "")`${2:arg1}):
+	`!p snip.rv = triple_quotes(snip)`${4:TODO: Docstring for $1.}`!p
+write_function_docstring(t, snip) `
+	${5:${VISUAL:pass}}
+endsnippet
+
+
+snippet defs "static method with docstrings" b
+@staticmethod
+def ${1:function}(${2:arg1}):
+	`!p snip.rv = triple_quotes(snip)`${4:TODO: Docstring for $1.}`!p
+write_function_docstring(t, snip) `
+	${5:${VISUAL:pass}}
+endsnippet
+
 
 snippet contain "methods for emulating a container type" b
 def __len__(self):
@@ -506,42 +538,13 @@ def __coerce__(self, other):
 	${25:pass}
 endsnippet
 
-snippet def "function with docstrings" b
-def ${1:function}(`!p
-if snip.indent:
-	snip.rv = 'self' + (", " if len(t[2]) else "")`${2:arg1}):
-	`!p snip.rv = triple_quotes(snip)`${4:TODO: Docstring for $1.}`!p
-write_function_docstring(t, snip) `
-	${5:${VISUAL:pass}}
-endsnippet
-
-
-snippet defc "class method with docstrings" b
-@classmethod
-def ${1:function}(`!p
-if snip.indent:
-	snip.rv = 'cls' + (", " if len(t[2]) else "")`${2:arg1}):
-	`!p snip.rv = triple_quotes(snip)`${4:TODO: Docstring for $1.}`!p
-write_function_docstring(t, snip) `
-	${5:${VISUAL:pass}}
-endsnippet
-
-
-snippet defs "static method with docstrings" b
-@staticmethod
-def ${1:function}(${2:arg1}):
-	`!p snip.rv = triple_quotes(snip)`${4:TODO: Docstring for $1.}`!p
-write_function_docstring(t, snip) `
-	${5:${VISUAL:pass}}
-endsnippet
-
-
 # doesn't expand when there is a word in front
+
 snippet /(^|(?<=\W))\./ "self." r
 self.
 endsnippet
 
-snippet from "from module import name" b
+snippet fr "from module import name" b
 from ${1:module} import ${2:Stuff}
 endsnippet
 
@@ -724,48 +727,57 @@ snippet pmdoc "pocoo style module doc string" b
 $0
 endsnippet
 
+################################################################################
+#
+#                       user defined snippets
+#
+################################################################################
 
-####################### some user defined snippets
+global !p
+def basic_log():
+	return "logging.basicConfig(level=logging.DEBUG,\n" + \
+            "        format='%(levelname)s: %(asctime)s %(filename)s[line:%(lineno)d]'\n" + \
+            "               ' [%(process)d] %(message)s',\n" + \
+            "        datefmt='%m-%d %H:%M:%S',\n" + \
+            "        filename=None,\n" + \
+            "        filemode='a')"
+
+endglobal
 
 snippet log
-logging.basicConfig(level=logging.DEBUG,
-					format='%(levelname)s: %(asctime)s %(filename)s[line:%(lineno)d]'
-                           ' [%(process)d] %(message)s',
-					datefmt='%m-%d %H:%M:%S',
-					filename=None,
-					filemode='a')
+`!p snip.rv = basic_log()`
 endsnippet
 
-# env for __init__.py file
-snippet ienv
-# -*- coding:gb18030 -*-
+
+snippet ienv "env for __init__.py file" b
+# -*- coding:utf8 -*-
 ##########################################################
-# Copyright (c) `strftime("%Y")` Baidu.com, Inc. All Rights Reserved #
+# Copyright (c) `!v strftime("%Y")` Baidu.com, Inc. All Rights Reserved #
 ##########################################################
 
 """${1:description}
 
-Filname: `expand("%:t")`
+Filname: `!v expand("%:t")`
 Authors: ZhangAo(@baidu.com)
-Date: `strftime("%Y-%m-%d %H:%M:%S")`
+Date: `!v strftime("%Y-%m-%d %H:%M:%S")`
 """
 
 import ${2}
 endsnippet
 
-# env for bigflow code
-snippet blib
+
+snippet blib "env for bigflow code" b
 #!/usr/bin/env ${1:pyrun}
-# -*- coding:gb18030 -*-
+# -*- coding:utf8 -*-
 ##########################################################
-# Copyright (c) `strftime("%Y")` Baidu.com, Inc. All Rights Reserved #
+# Copyright (c) `!v strftime("%Y")` Baidu.com, Inc. All Rights Reserved #
 ##########################################################
 
 """${2:description}
 
-Filname: `expand("%:t")`
+Filname: `!v expand("%:t")`
 Authors: ZhangAo(@baidu.com)
-Date: `strftime("%Y-%m-%d %H:%M:%S")`
+Date: `!v strftime("%Y-%m-%d %H:%M:%S")`
 """
 
 import sys
@@ -776,19 +788,19 @@ ${3}
 
 endsnippet
 
-# env for bigflow code
-snippet bcmd
+
+snippet bcmd "env for bigflow code" b
 #!/usr/bin/env ${1:pyrun}
-# -*- coding:gb18030 -*-
+# -*- coding:utf8 -*-
 ##########################################################
-# Copyright (c) `strftime("%Y")` Baidu.com, Inc. All Rights Reserved #
+# Copyright (c) `!v strftime("%Y")` Baidu.com, Inc. All Rights Reserved #
 ##########################################################
 
 """${2:description}
 
-Filname: `expand("%:t")`
+Filname: `!v expand("%:t")`
 Authors: ZhangAo(@baidu.com)
-Date: `strftime("%Y-%m-%d %H:%M:%S")`
+Date: `!v strftime("%Y-%m-%d %H:%M:%S")`
 """
 
 import sys
@@ -879,33 +891,29 @@ if __name__ == "__main__":
 	
 endsnippet
 
-snippet env
+snippet aenv "init of python file" b
 #!/usr/bin/env python
-# -*- coding:gb18030 -*-
+# -*- coding:utf-8 -*-
 ##########################################################
-# Copyright (c) `strftime("%Y")` Baidu.com, Inc. All Rights Reserved #
+# Copyright (c) `!v strftime("%Y")` Baidu.com, Inc. All Rights Reserved #
 ##########################################################
 
 """${1:description}
 
-Filname: `expand("%:t")`
+Filname: `!v expand("%:t")`
 Authors: ZhangAo(@baidu.com)
-Date: `strftime("%Y-%m-%d %H:%M:%S")`
+Date: `!v strftime("%Y-%m-%d %H:%M:%S")`
 """
 
 import sys
 import os
 import traceback
 import logging
-logging.basicConfig(level=logging.DEBUG,
-					format='%(levelname)s: %(asctime)s %(filename)s[line:%(lineno)d]'
-						   ' [%(process)d] %(message)s',
-					datefmt='%m-%d %H:%M:%S',
-					filename=None,
-					filemode='a')
 
 from autoopt_basic import common_arg_parser
 from autoopt_basic import parse_args
+
+`!p snip.rv = basic_log()`
 
 def create_arg_parser(argv):
 	"""create_arg_parser
@@ -935,16 +943,16 @@ endsnippet
 
 snippet utenv
 #!/usr/bin/env ${1:python}
-# -*- coding:gb18030 -*-
+# -*- coding:utf8 -*-
 ##########################################################
-# Copyright (c) `strftime("%Y")` Baidu.com, Inc. All Rights Reserved #
+# Copyright (c) `!v strftime("%Y")` Baidu.com, Inc. All Rights Reserved #
 ##########################################################
 
 """unittest of $3
 
-Filname: `expand("%:t")`
+Filname: `!v expand("%:t")`
 Authors: ZhangAo(@baidu.com)
-Date: `strftime("%Y-%m-%d %H:%M:%S")`
+Date: `!v strftime("%Y-%m-%d %H:%M:%S")`
 """
 
 import sys
@@ -960,12 +968,7 @@ sys.path.pop(0)
 ${4}
 
 if __name__ == "__main__":
-	logging.basicConfig(level=logging.DEBUG,
-						format='%(levelname)s: %(asctime)s %(filename)s[line:%(lineno)d]'
-							   ' [%(process)d] %(message)s',
-						datefmt='%m-%d %H:%M:%S,%m',
-						filename=None,
-						filemode='a')
+	`!p snip.rv = basic_log()`
 
 	unittest.main()
 endsnippet
