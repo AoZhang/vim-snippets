@@ -742,10 +742,87 @@ def basic_log():
             "        filename=None,\n" + \
             "        filemode='a')"
 
+
+
 endglobal
 
 snippet log
 `!p snip.rv = basic_log()`
+endsnippet
+
+
+snippet args
+from argparse import ArgumentParser
+arg_parser = ArgumentParser(description="${1:description}")
+arg_parser.add_argument("input", nargs="?", help="input file path")
+arg_parser.add_argument("-o", "--output", dest="output", help="output file path")
+args = arg_parser.parse_args()
+${2}
+endsnippet
+
+
+snippet env
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+##########################################################
+# Copyright (c) `!v strftime("%Y")` Baidu.com, Inc. All Rights Reserved #
+##########################################################
+
+"""${1:description}
+
+Filname: `!v expand("%:t")`
+Authors: ZhangAo(@baidu.com)
+Date: `!v strftime("%Y-%m-%d %H:%M:%S")`
+"""
+
+import sys
+import os
+import traceback
+import logging
+
+`!p snip.rv = basic_log()`
+
+if __name__ == "__main__":
+	from argparse import ArgumentParser
+	try:
+		arg_parser = ArgumentParser(description="$1")
+		arg_parser.add_argument("input", nargs="?", help="input file path")
+		arg_parser.add_argument("-o", "--output", dest="output", help="output file path")
+		args = arg_parser.parse_args()
+
+		${2}
+	except Exception as e:
+		logging.critical(traceback.format_exc())
+		exit(-1)
+
+endsnippet
+
+
+snippet lib
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+##########################################################
+# Copyright (c) `!v strftime("%Y")` Baidu.com, Inc. All Rights Reserved #
+##########################################################
+
+"""${1:description}
+
+Filname: `!v expand("%:t")`
+Authors: ZhangAo(@baidu.com)
+Date: `!v strftime("%Y-%m-%d %H:%M:%S")`
+"""
+
+import sys
+import os
+import traceback
+import logging
+
+${2}
+
+if __name__ == "__main__":
+	"""run some simple test cases"""
+	pass
+
 endsnippet
 
 
@@ -1004,14 +1081,6 @@ def create_pipeline(args):
 
 endsnippet
 
-snippet arg
-from argparse import ArgumentParser
-arg_parser = ArgumentParser(description="${1}")
-arg_parser.add_argument("input", nargs="?", help="input file path")
-arg_parser.add_argument("-o", "--output", dest="output", help="output file path")${2}
-args = arg_parser.parse_args()
-endsnippet
-
 snippet fs
 ifs = None
 ofs = None
@@ -1038,6 +1107,5 @@ endsnippet
 snippet stderr
 sys.stderr.write("${1}\n")${2}
 endsnippet
-
 
 # vim:ft=snippets:
