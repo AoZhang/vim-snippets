@@ -73,6 +73,14 @@ snippet modeline "Vim modeline"
 vim`!v ':set '. (&expandtab ? printf('et sw=%i ts=%i', &sw, &ts) : printf('noet sts=%i sw=%i ts=%i', &sts, &sw, &ts)) . (&tw ? ' tw='. &tw : '') . ':'`
 endsnippet
 
+snippet date
+`date +"%Y-%m-%d"`
+endsnippet
+
+snippet time
+`date +"%H:%M:%S"`
+endsnippet
+
 extends nlpvb
 
 # vim:ft=snippets:

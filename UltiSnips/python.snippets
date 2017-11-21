@@ -142,13 +142,13 @@ def format_arg(arg, style):
 		return "%s : TODO" % arg
 
 
-def format_return(style):
+def format_return(style, desc='TODO'):
 	if style == DOXYGEN:
-		return "@return: TODO"
+		return "@return: %s" % (desc)
 	elif style in (NORMAL, SPHINX, JEDI):
-		return ":returns: TODO"
+		return ":returns: %s" % (desc)
 	elif style == GOOGLE:
-		return "Returns: TODO"
+		return "Returns: %s" % (desc)
 
 
 def format_raise(style):
@@ -555,31 +555,35 @@ endsnippet
 snippet roprop "Read Only Property" b
 @property
 def ${1:name}(self):
-	${2:return self._$1}$0
+	"""read property of $1"""
+	return self.${2:_$1}$0
 endsnippet
 
-snippet rwprop "Read write property" b
+snippet prop "Read write property" b
 def ${1:name}():
 	`!p snip.rv = triple_quotes(snip) if t[2] else ''
-`${2:TODO: Docstring for $1.}`!p
+`${2:getter and setter for $1.}`!p
 if t[2]:
 	snip >> 1
 
 	style = get_style(snip)
 	snip.rv += '\n' + snip.mkline('', indent='')
-	snip += format_return(style)
+	snip += format_return(style, 'dict   <func_name, func_ins>')
 	snip.rv += '\n' + snip.mkline('', indent='')
 	snip += triple_quotes(snip)
 else:
-	snip.rv = ""`
+	snip.rv = ''`
 	def fget(self):
-		return self._$1$0
+		"""getter of $1"""
+		return self._$1
 
 	def fset(self, value):
+		"""setter of $1"""
 		self._$1 = value
 	return locals()
 
-$1 = property(**$1(), doc=$1.__doc__)
+$1 = property(doc=$1.__doc__, **$1())
+$0
 endsnippet
 
 
@@ -680,19 +684,26 @@ snippet ann "Assert is not None" b
 self.assertIsNotNone(${1:${VISUAL:expression}})
 endsnippet
 
-snippet testcase "pyunit testcase" b
-class Test${1:Class}(${2:unittest.TestCase}):
+snippet ut "pyunit testcase" b
+class Test${1:Class}(unittest.TestCase):
 
-	`!p snip.rv = triple_quotes(snip)`${3:Test case docstring.}`!p snip.rv = triple_quotes(snip)`
+	`!p snip.rv = triple_quotes(snip)`${2:Test case docstring.}`!p snip.rv = triple_quotes(snip)`
 
 	def setUp(self):
-		${4:pass}
+		${3:pass}
 
 	def tearDown(self):
-		${5:pass}
+		${4:pass}
 
-	def test_${6:name}(self):
-		${7:${VISUAL:pass}}
+	def test_${5:name}(self):
+		"""test function of $5"""
+		${6:${VISUAL:pass}}
+endsnippet
+
+snippet deft
+def test_${1:function_name}(self):
+	"""test function of $1"""
+	${2:pass}
 endsnippet
 
 snippet " "triple quoted string (double quotes)" b
@@ -772,7 +783,7 @@ snippet env
 
 Filname: `!v expand("%:t")`
 Authors: ZhangAo(@baidu.com)
-Date: `!v strftime("%Y-%m-%d %H:%M:%S")`
+Date: `date +"%Y-%m-%d %H:%M:%S"`
 """
 
 import sys
@@ -809,7 +820,7 @@ snippet lib
 
 Filname: `!v expand("%:t")`
 Authors: ZhangAo(@baidu.com)
-Date: `!v strftime("%Y-%m-%d %H:%M:%S")`
+Date: `date +"%Y-%m-%d %H:%M:%S"`
 """
 
 import sys
@@ -836,7 +847,7 @@ snippet ienv "env for __init__.py file" b
 
 Filname: `!v expand("%:t")`
 Authors: ZhangAo(@baidu.com)
-Date: `!v strftime("%Y-%m-%d %H:%M:%S")`
+Date: `date +"%Y-%m-%d %H:%M:%S"`
 """
 
 import ${2}
@@ -854,7 +865,7 @@ snippet blib "env for bigflow code" b
 
 Filname: `!v expand("%:t")`
 Authors: ZhangAo(@baidu.com)
-Date: `!v strftime("%Y-%m-%d %H:%M:%S")`
+Date: `date +"%Y-%m-%d %H:%M:%S"`
 """
 
 import sys
@@ -877,7 +888,7 @@ snippet bcmd "env for bigflow code" b
 
 Filname: `!v expand("%:t")`
 Authors: ZhangAo(@baidu.com)
-Date: `!v strftime("%Y-%m-%d %H:%M:%S")`
+Date: `date +"%Y-%m-%d %H:%M:%S"`
 """
 
 import sys
@@ -979,7 +990,7 @@ snippet aenv "init of python file" b
 
 Filname: `!v expand("%:t")`
 Authors: ZhangAo(@baidu.com)
-Date: `!v strftime("%Y-%m-%d %H:%M:%S")`
+Date: `date +"%Y-%m-%d %H:%M:%S"`
 """
 
 import sys
@@ -1025,11 +1036,11 @@ snippet utenv
 # Copyright (c) `!v strftime("%Y")` Baidu.com, Inc. All Rights Reserved #
 ##########################################################
 
-"""unittest of $3
+"""unittest of $3.$4
 
 Filname: `!v expand("%:t")`
 Authors: ZhangAo(@baidu.com)
-Date: `!v strftime("%Y-%m-%d %H:%M:%S")`
+Date: `date +"%Y-%m-%d %H:%M:%S"`
 """
 
 import sys
@@ -1038,11 +1049,9 @@ import traceback
 import logging
 import unittest
 
-sys.path.insert(0, '${2:..}')
-import ${3:module_to_be_tested}
-sys.path.pop(0)
+from ${3:module} import ${4:file_to_be_tested}
 
-${4}
+${5}
 
 if __name__ == "__main__":
 	`!p snip.rv = basic_log()`
@@ -1107,5 +1116,25 @@ endsnippet
 snippet stderr
 sys.stderr.write("${1}\n")${2}
 endsnippet
+
+snippet group
+group = grouper.Grouper(ifs)
+while group.has_next():
+	key = group.get_key()
+	${1}
+	while group.key_same():
+		value = group.next_value()
+		${2}
+endsnippet
+
+snippet imnt
+from collections import namedtuple
+endsnippet
+
+snippet imdd
+from collections import defaultdict
+endsnippet
+
+
 
 # vim:ft=snippets:
