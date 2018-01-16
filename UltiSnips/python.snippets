@@ -129,17 +129,17 @@ def get_style(snip):
 
 def format_arg(arg, style):
 	if style == DOXYGEN:
-		return "@param %s TODO" % arg
+		return "@param %s NULL" % arg
 	elif style == SPHINX:
-		return ":param %s: TODO" % arg
+		return ":param %s: NULL" % arg
 	elif style == NORMAL:
-		return ":%s: TODO" % arg
+		return ":%s: NULL" % arg
 	elif style == GOOGLE:
-		return "%s (TODO): TODO" % arg
+		return "%s (TYPE): NULL" % arg
 	elif style == JEDI:
-		return ":type %s: TODO" % arg
+		return ":type %s: NULL" % arg
 	elif style == NUMPY:
-		return "%s : TODO" % arg
+		return "%s : NULL" % arg
 
 
 def format_return(style, desc='TODO'):
@@ -153,11 +153,11 @@ def format_return(style, desc='TODO'):
 
 def format_raise(style):
 	if style == DOXYGEN:
-		return "@raise: TODO"
+		return "@raise: NULL"
 	elif style in (NORMAL, SPHINX, JEDI):
-		return ":raises: TODO"
+		return ":raises: NULL"
 	elif style == GOOGLE:
-		return "Raises: TODO"
+		return "Raises: NULL"
 
 
 def write_docstring_args(args, snip):
@@ -254,7 +254,7 @@ def write_function_docstring(t, snip):
 	if style == NUMPY:
 		snip += 'Returns'
 		snip += '-------'
-		snip += 'TODO'
+		snip += 'NULL'
 	else:
 		snip += format_return(style)
 	snip.rv += '\n' + snip.mkline('', indent='')
@@ -262,7 +262,7 @@ def write_function_docstring(t, snip):
 	if style == NUMPY:
 		snip += 'Raises'
 		snip += '-------'
-		snip += 'TODO'
+		snip += 'NULL'
 	else:
 		snip += format_raise(style)
 	snip.rv += '\n' + snip.mkline('', indent='')
@@ -745,13 +745,18 @@ endsnippet
 ################################################################################
 
 global !p
-def basic_log():
+def basic_log(logfile=None, filemode='a'):
+	if logfile is None:
+		filename_pram = "filename=None"
+	else:
+		filename_pram = "filename='%s'" % (logfile)
+
 	return "logging.basicConfig(level=logging.DEBUG,\n" + \
-            "        format='%(levelname)s: %(asctime)s %(filename)s[line:%(lineno)d]'\n" + \
-            "               ' [%(process)d] %(message)s',\n" + \
+            "        format='%(levelname)s: %(asctime)s %(filename)s'\n" + \
+            "        ' [%(funcName)s:%(lineno)d][%(process)d] %(message)s',\n" + \
             "        datefmt='%m-%d %H:%M:%S',\n" + \
-            "        filename=None,\n" + \
-            "        filemode='a')"
+            "        %s,\n" % (filename_pram) + \
+            "        filemode='%s')" % (filemode)
 
 
 
@@ -850,7 +855,7 @@ Authors: ZhangAo(@baidu.com)
 Date: `date +"%Y-%m-%d %H:%M:%S"`
 """
 
-import ${2}
+${2}
 endsnippet
 
 
@@ -1054,7 +1059,8 @@ from ${3:module} import ${4:file_to_be_tested}
 ${5}
 
 if __name__ == "__main__":
-	`!p snip.rv = basic_log()`
+	os.mkdir('log') if not os.path.isdir('log') else None
+	`!p snip.rv = basic_log('log/%s.log' % (fn.rsplit('.', 1)[0]), 'w')`
 
 	unittest.main()
 endsnippet
