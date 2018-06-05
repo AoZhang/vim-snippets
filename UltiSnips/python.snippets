@@ -552,7 +552,7 @@ endsnippet
 ##############
 # PROPERTIES #
 ##############
-snippet roprop "Read Only Property" b
+snippet rprop "Read Only Property" b
 @property
 def ${1:name}(self):
 	"""read property of $1"""
@@ -560,31 +560,43 @@ def ${1:name}(self):
 endsnippet
 
 snippet prop "Read write property" b
-def ${1:name}():
-	`!p snip.rv = triple_quotes(snip) if t[2] else ''
-`${2:getter and setter for $1.}`!p
-if t[2]:
-	snip >> 1
+@property
+def ${1:name}(self):
+	"""read property of $1"""
+	return self.${2:_$1}
 
-	style = get_style(snip)
-	snip.rv += '\n' + snip.mkline('', indent='')
-	snip += format_return(style, 'dict   <func_name, func_ins>')
-	snip.rv += '\n' + snip.mkline('', indent='')
-	snip += triple_quotes(snip)
-else:
-	snip.rv = ''`
-	def fget(self):
-		"""getter of $1"""
-		return self._$1
-
-	def fset(self, value):
-		"""setter of $1"""
-		self._$1 = value
-	return locals()
-
-$1 = property(doc=$1.__doc__, **$1())
-$0
+@$1.setter
+def $1(self, value):
+	"""write property of $1"""
+	self.$2 = value$0
 endsnippet
+
+## snippet prop "Read write property" b
+## def ${1:name}():
+## 	`!p snip.rv = triple_quotes(snip) if t[2] else ''
+## `${2:getter and setter for $1.}`!p
+## if t[2]:
+## 	snip >> 1
+## 
+## 	style = get_style(snip)
+## 	snip.rv += '\n' + snip.mkline('', indent='')
+## 	snip += format_return(style, 'dict   <func_name, func_ins>')
+## 	snip.rv += '\n' + snip.mkline('', indent='')
+## 	snip += triple_quotes(snip)
+## else:
+## 	snip.rv = ''`
+## 	def fget(self):
+## 		"""getter of $1"""
+## 		return self._$1
+## 
+## 	def fset(self, value):
+## 		"""setter of $1"""
+## 		self._$1 = value
+## 	return locals()
+## 
+## $1 = property(doc=$1.__doc__, **$1())
+## $0
+## endsnippet
 
 
 ####################
@@ -769,7 +781,8 @@ endsnippet
 
 snippet args
 from argparse import ArgumentParser
-arg_parser = ArgumentParser(description="${1:description}")
+arg_parser = ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+							description="${1:description}")
 arg_parser.add_argument("input", nargs="?", help="input file path")
 arg_parser.add_argument("-o", "--output", dest="output", help="output file path")
 args = arg_parser.parse_args()
@@ -882,7 +895,7 @@ ${3}
 endsnippet
 
 
-snippet bcmd "env for bigflow code" b
+snippet benv "env for bigflow code" b
 #!/usr/bin/env ${1:pyrun}
 # -*- coding:utf8 -*-
 ##########################################################
@@ -946,16 +959,16 @@ def create_pipeline(args):
 		pipeline_params['pipeline_type'] = "LOCAL"
 	elif args.is_hadoop:
 		pipeline_params['pipeline_type'] = "HADOOP"
-		pipeline_params['default_concurrency'] = 997
+		pipeline_params['default_concurrency'] = 97
 		pipeline_params['hadoop_job_conf'] = {
-				"mapred.job.map.capacity": "1500",
-				"mapred.job.reduce.capacity": "1500",
+				"mapred.job.map.capacity": "200",
+				"mapred.job.reduce.capacity": "100",
 				"mapred.job.priority" : "NORMAL",
 				"abaci.dag.datasize.per.reduce": str(1000 * 1000 * 10),
-				"mapred.job.name": "zhangao_job",
+				"mapred.job.name": "nlp_zhangao_stat_query",
 		}
 
-		pipeline_params['tmp_data_path'] = ${3:'hdfs:///app/ecom/fcr-opt/zhangao}/tmp'
+		pipeline_params['tmp_data_path'] = 'afs:///user/nlp/ip/zhangao/bigflow_tmp_path'
 	else:
 		logging.critical("bigflow run mode setting error")
 		exit(-1)
@@ -1123,7 +1136,7 @@ snippet stderr
 sys.stderr.write("${1}\n")${2}
 endsnippet
 
-snippet group
+snippet group "" b
 group = grouper.Grouper(ifs)
 while group.has_next():
 	key = group.get_key()

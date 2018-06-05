@@ -13,17 +13,15 @@ global !p
 def write_docstring_args(arglist, snip):
 	args = str(arglist).split(',')
 
-	if len(args) > 1:
-		c = 0
-		for arg in args:
-			if c == 0:
-				snip.rv += arg
-				c = 1
-			else:
-				snip += '*       : %s' % arg.strip()
-	else:
-		snip.rv = args[0]
-
+	c = 0
+	for arg in args:
+		lst_arg_tmp = arg.strip().rsplit(' ', 1)
+		arg = '[%s]' % lst_arg_tmp[0] + ' '.join(lst_arg_tmp[1:])
+		if c == 0:
+			snip.rv += arg
+			c = 1
+		else:
+			snip += '// @param[in] %s' % arg.strip()
 
 endglobal
 
@@ -53,8 +51,7 @@ endsnippet
 
 snippet readfile "read file (readF)"
 std::vector<char> v;
-if (FILE *fp = fopen(${1:"filename"}, "r"))
-{
+if (FILE *fp = fopen(${1:"filename"}, "r")) {
 	char buf[1024];
 	while(size_t len = fread(buf, 1, sizeof(buf), fp))
 		v.insert(v.end(), buf, buf + len);
@@ -74,33 +71,31 @@ snippet tp "template <typename ..> (template)"
 template <typename ${1:_InputIter}>
 endsnippet
 
-snippet cla "An entire .h generator" b
-#ifndef ${2:`!v substitute(vim_snippets#Filename('$1_H','ClassName'),'.*','\U&\E','')`}
-#define $2
-
+snippet class "An entire .h generator" b
 class ${1:`!v substitute(substitute(vim_snippets#Filename('$1','ClassName'),'^.','\u&',''), '_\(\w\)', '\u\1', 'g')`} {
-private:
-	$3
-
 public:
 	$1();
 	virtual ~$1();
-};
 
-#endif /* $2 */
+private:
+	$3
+};
 endsnippet
 
+snippet func "Basic c++ doxygen function template" b
+// ${4:brief}
+//
+// @param[in] `!p write_docstring_args(t[3],snip)`
+//
+// @return `!p snip.rv = t[1]`
+${1:ReturnType} ${2:FunctionName}(${3:param});$0
+endsnippet
 
-snippet fnc "Basic c++ doxygen function template" b
-/**
-* @brief: ${4:brief}
-*
-* @param: `!p write_docstring_args(t[3],snip)`
-*
-* @return: `!p snip.rv = t[1]`
-*/
-${1:ReturnType} ${2:FunctionName}(${3:param}) {
-  ${0:FunctionBody}
-}
+snippet fdoc
+// ${1:brief}
+//
+// @param[in] ${3}
+//
+// @return ${2}
 endsnippet
 # vim:ft=snippets:
