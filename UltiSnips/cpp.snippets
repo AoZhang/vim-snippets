@@ -21,7 +21,7 @@ def write_docstring_args(arglist, snip):
 			snip.rv += arg
 			c = 1
 		else:
-			snip += '// @param[in] %s' % arg.strip()
+			snip += '// @param[in]  %s' % arg.strip()
 
 endglobal
 
@@ -85,7 +85,7 @@ endsnippet
 snippet func "Basic c++ doxygen function template" b
 // ${4:brief}
 //
-// @param[in] `!p write_docstring_args(t[3],snip)`
+// @param[in]  `!p write_docstring_args(t[3],snip)`
 //
 // @return `!p snip.rv = t[1]`
 ${1:ReturnType} ${2:FunctionName}(${3:param});$0
@@ -94,8 +94,21 @@ endsnippet
 snippet fdoc
 // ${1:brief}
 //
-// @param[in] ${3}
+// @param[in]  ${3}
 //
 // @return ${2}
 endsnippet
+
+snippet for "for loop (for)"
+for (${1:int} ${2:i} = ${3:0}; $2 < ${4:count}; ++$2) {
+	${VISUAL}${0}
+}
+endsnippet
+
+snippet fori "for int loop (fori)"
+for (${1:int} ${2:i} = 0; $2 < ${3:count}; ++$2) {
+	${VISUAL}${0}
+}
+endsnippet
+
 # vim:ft=snippets:

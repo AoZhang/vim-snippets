@@ -94,4 +94,11 @@ snippet ddef "declaration function def" b
 ${1:void} ${2:function_name}(${3});
 endsnippet
 
+snippet Inc
+#include <${1:stdio.h}>
+endsnippet
+snippet inc
+#include "${1:`vim_snippets#Filename("$1.h")`}"
+endsnippet
+# ifndef...define...endif
 # vim:ft=snippets:
