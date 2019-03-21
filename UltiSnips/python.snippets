@@ -821,6 +821,7 @@ if __name__ == "__main__":
 
 		${2}
 	except Exception as e:
+		traceback.print_exc()
 		logging.critical(traceback.format_exc())
 		exit(-1)
 
@@ -1112,7 +1113,7 @@ endsnippet
 snippet fs
 ifs = None
 ofs = None
-if args.${1:inpath} is None:
+if args.${1:input} is None:
 	logging.info("<input> is None. using stdin instead.")
 	ifs = sys.stdin
 elif os.path.isfile(args.$1):
@@ -1120,7 +1121,7 @@ elif os.path.isfile(args.$1):
 else:
 	logging.critical("input file is not exist: [%s]" % args.$1)
 	exit(-1)
-if args.${2:outpath} is None:
+if args.${2:output} is None:
 	logging.info("<output> is None. using stdout instead.")
 	ofs = sys.stdout
 else:
