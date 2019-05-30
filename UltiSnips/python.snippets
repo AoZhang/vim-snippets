@@ -1119,7 +1119,7 @@ if args.${1:input} is None:
 elif os.path.isfile(args.$1):
 	ifs = open(args.$1, 'r')
 else:
-	logging.critical("input file is not exist: [%s]" % args.$1)
+	logging.critical("input file does not exist: [%s]" % args.$1)
 	exit(-1)
 if args.${2:output} is None:
 	logging.info("<output> is None. using stdout instead.")
