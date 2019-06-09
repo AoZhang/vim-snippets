@@ -112,5 +112,14 @@ endsnippet
 snippet inc
 #include "${1:`vim_snippets#Filename("$1.h")`}"
 endsnippet
+
+snippet struct
+struct ${1:Name} {
+	$0
+	$1() {}
+	virtual ~$1() {}
+};
+endsnippet
+
 # ifndef...define...endif
 # vim:ft=snippets:

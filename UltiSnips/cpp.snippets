@@ -1,9 +1,11 @@
 priority -50
-
 extends c
 
-# We want to overwrite everything in parent ft.
 priority -49
+extends gtest_cpp
+
+# We want to overwrite everything in parent ft.
+priority -45
 ###########################################################################
 #			    Global functions 						  #
 ###########################################################################
@@ -21,7 +23,7 @@ def write_docstring_args(arglist, snip):
 			snip.rv += arg
 			c = 1
 		else:
-			snip += '// @param[in]  %s' % arg.strip()
+			snip += '// @param[in]  %s:' % arg.strip()
 
 endglobal
 
@@ -39,7 +41,7 @@ public:
 	virtual ~$1();
 
 private:
-	$3
+	$0
 };  /* class $1 */
 endsnippet
 
@@ -102,137 +104,10 @@ for (auto${1:&} ${2:item}: ${3:iterable}) {
 }
 endsnippet
 
-snippet ut
-class ${1:`!v substitute(substitute(vim_snippets#Filename('$1','TestClassName'),'^.','\u&',''), '_\(\w\)', '\u\1', 'g')`}: public ::testing::Test  {
-public:
-	$1() {}
-	virtual ~$1() {}
-
-	// be called before the 1st test case
-	static void SetUpTestCase() {}
-
-	// be called after the last test case
-	static void TearDownTestCase() {}
-
-	// be called before each test case
-	void SetUp() {}
-
-	// be called after each test case
-	void TearDown() {}
-protected:
-	${2:/* test variable */}
-};
-
-TEST_F($1, ${3:test_func_name_case_1}) {
-	${4:/* test body */}
+snippet while
+while (${1:condition}) {
+	$0
 }
-
-int main(int argc, char** argv) {
-	::testing::InitGoogleTest(&argc, argv);
-	return RUN_ALL_TESTS();
-}
-endsnippet
-
-snippet testf
-TEST_F(${1:`!v substitute(substitute(vim_snippets#Filename('$1','TestClassName'),'^.','\u&',''), '_\(\w\)', '\u\1', 'g')`}, ${2:test_func_name_case_1}) {
-	${3:/* test body */}
-}
-endsnippet
-
-snippet astrue "GTest Assersion: ASSERT_TRUE"
-ASSERT_TRUE(${1:checked value})
-endsnippet
-
-snippet asfalse "GTest Assersion: ASSERT_FALSE"
-ASSERT_FALSE(${1:checked value})
-endsnippet
-
-snippet aseq "GTest Assersion: ASSERT_EQ"
-ASSERT_EQ(${1:ground true}, ${2:checked value})
-endsnippet
-
-snippet asge "GTest Assersion: ASSERT_GE"
-ASSERT_GE(${1:ground true}, ${2:checked value})
-endsnippet
-
-snippet asgt "GTest Assersion: ASSERT_GT"
-ASSERT_GT(${1:ground true}, ${2:checked value})
-endsnippet
-
-snippet asle "GTest Assersion: ASSERT_LE"
-ASSERT_LE(${1:ground true}, ${2:checked value})
-endsnippet
-
-snippet aslt "GTest Assersion: ASSERT_LT"
-ASSERT_LT(${1:ground true}, ${2:checked value})
-endsnippet
-
-snippet asne "GTest Assersion: ASSERT_NE"
-ASSERT_NE(${1:ground true}, ${2:checked value})
-endsnippet
-
-snippet asstrcaseeq "GTest Assersion: ASSERT_STRCASEEQ"
-ASSERT_STRCASEEQ(${1:ground true}, ${2:checked value})
-endsnippet
-
-snippet asstrcasene "GTest Assersion: ASSERT_STRCASENE"
-ASSERT_STRCASENE(${1:ground true}, ${2:checked value})
-endsnippet
-
-snippet asstreq "GTest Assersion: ASSERT_STREQ"
-ASSERT_STREQ(${1:ground true}, ${2:checked value})
-endsnippet
-
-snippet asstrne "GTest Assersion: ASSERT_STRNE"
-ASSERT_STRNE(${1:ground true}, ${2:checked value})
-endsnippet
-
-snippet extrue "GTest Assersion: EXPECT_TRUE"
-EXPECT_TRUE(${1:checked value})
-endsnippet
-
-snippet exfalse "GTest Assersion: EXPECT_FALSE"
-EXPECT_FALSE(${1:checked value})
-endsnippet
-
-snippet exeq "GTest Assersion: EXPECT_EQ"
-EXPECT_EQ(${1:ground true}, ${2:checked value})
-endsnippet
-
-snippet exge "GTest Assersion: EXPECT_GE"
-EXPECT_GE(${1:ground true}, ${2:checked value})
-endsnippet
-
-snippet exgt "GTest Assersion: EXPECT_GT"
-EXPECT_GT(${1:ground true}, ${2:checked value})
-endsnippet
-
-snippet exle "GTest Assersion: EXPECT_LE"
-EXPECT_LE(${1:ground true}, ${2:checked value})
-endsnippet
-
-snippet exlt "GTest Assersion: EXPECT_LT"
-EXPECT_LT(${1:ground true}, ${2:checked value})
-endsnippet
-
-snippet exne "GTest Assersion: EXPECT_NE"
-EXPECT_NE(${1:ground true}, ${2:checked value})
-endsnippet
-
-snippet exstrcaseeq "GTest Assersion: EXPECT_STRCASEEQ"
-EXPECT_STRCASEEQ(${1:ground true}, ${2:checked value})
-endsnippet
-
-snippet exstrcasene "GTest Assersion: EXPECT_STRCASENE"
-EXPECT_STRCASENE(${1:ground true}, ${2:checked value})
-endsnippet
-
-snippet exstreq "GTest Assersion: EXPECT_STREQ"
-EXPECT_STREQ(${1:ground true}, ${2:checked value})
-endsnippet
-
-snippet exstrne "GTest Assersion: EXPECT_STRNE"
-EXPECT_STRNE(${1:ground true}, ${2:checked value})
 endsnippet
 
 # vim:ft=snippets:
