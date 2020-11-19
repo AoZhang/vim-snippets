@@ -105,9 +105,29 @@ for (auto${1:&} ${2:item}: ${3:iterable}) {
 endsnippet
 
 snippet while
-while (${1:condition}) {
+while (${1:/*condition*/}) {
 	$0
 }
+endsnippet
+
+snippet dlog "debug log"
+CDEBUG_LOG("${1:log string}", ${2:/*param*/});${VISUAL}${0}
+endsnippet
+
+snippet tlog "trace log"
+CTRACE_LOG("${1:log string}", ${2:/*param*/});${VISUAL}${0}
+endsnippet
+
+snippet nlog "notice log"
+CNOTICE_LOG("${1:log string}", ${2:/*param*/});${VISUAL}${0}
+endsnippet
+
+snippet wlog "warning log"
+CWARNING_LOG("${1:log string}", ${2:/*param*/});${VISUAL}${0}
+endsnippet
+
+snippet flog "fatal log"
+CFATAL_LOG("${1:log string}", ${2:/*param*/});${VISUAL}${0}
 endsnippet
 
 # vim:ft=snippets:

@@ -6,7 +6,7 @@ priority -50
 
 #! header
 snippet #! "Shebang header for python scripts" b
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf8 -*-
 $0
 endsnippet
@@ -49,6 +49,7 @@ SPHINX  = 0x3
 GOOGLE  = 0x4
 NUMPY   = 0x5
 JEDI    = 0x6
+BAIDU   = 0x7
 
 SINGLE_QUOTES = "'"
 DOUBLE_QUOTES = '"'
@@ -58,6 +59,7 @@ class Arg(object):
 	def __init__(self, arg):
 		self.arg = arg
 		self.name = arg.split('=')[0].strip()
+		self.value_str = arg.split('=')[1].strip() if self.is_kwarg() else None
 
 	def __str__(self):
 		return self.name
@@ -67,6 +69,11 @@ class Arg(object):
 
 	def is_kwarg(self):
 		return '=' in self.arg
+
+	def value(self):
+		if self.value_str is None:
+			raise ValueError('no default value is given')
+		return self.value_str
 
 
 def get_args(arglist):
@@ -119,7 +126,8 @@ def triple_quotes_handle_trailing(snip, quoting_style):
 def get_style(snip):
 	style = snip.opt("g:ultisnips_python_style", "normal")
 
-	if    style == "doxygen": return DOXYGEN
+	if    style == "baidu": return BAIDU
+	elif  style == "doxygen": return DOXYGEN
 	elif  style == "sphinx": return SPHINX
 	elif  style == "google": return GOOGLE
 	elif  style == "numpy": return NUMPY
@@ -128,36 +136,41 @@ def get_style(snip):
 
 
 def format_arg(arg, style):
-	if style == DOXYGEN:
-		return "@param %s NULL" % arg
+	dft_comment = 'Default is ' + arg.value() if arg.is_kwarg() else 'NULL'
+	arg = str(arg)
+	dtype = 'TYPE'
+	if ':' in arg:
+		arg, dtype = [x.strip() for x in arg.split(':', 1)]
+	if style in (BAIDU, GOOGLE):
+		return "%s (%s): %s" % (arg, dtype, dft_comment)
+	elif style == DOXYGEN:
+		return "@param %s %s" % (arg, dft_comment)
 	elif style == SPHINX:
-		return ":param %s: NULL" % arg
+		return ":param %s: %s" % (arg, dft_comment)
 	elif style == NORMAL:
-		return ":%s: NULL" % arg
-	elif style == GOOGLE:
-		return "%s (TYPE): NULL" % arg
+		return ":%s: %s" % (arg, dft_comment)
 	elif style == JEDI:
-		return ":type %s: NULL" % arg
+		return ":type %s: %s" % (arg, dft_comment)
 	elif style == NUMPY:
-		return "%s : NULL" % arg
+		return "%s : %s" % (arg, dft_comment)
 
 
 def format_return(style, desc='TODO'):
 	if style == DOXYGEN:
 		return "@return: %s" % (desc)
+	elif style in (BAIDU, GOOGLE):
+		return "Returns: %s" % (desc)
 	elif style in (NORMAL, SPHINX, JEDI):
 		return ":returns: %s" % (desc)
-	elif style == GOOGLE:
-		return "Returns: %s" % (desc)
 
 
 def format_raise(style):
 	if style == DOXYGEN:
 		return "@raise: NULL"
+	elif style in (BAIDU, GOOGLE):
+		return "Raises: NULL"
 	elif style in (NORMAL, SPHINX, JEDI):
 		return ":raises: NULL"
-	elif style == GOOGLE:
-		return "Raises: NULL"
 
 
 def write_docstring_args(args, snip):
@@ -169,13 +182,24 @@ def write_docstring_args(args, snip):
 
 	style = get_style(snip)
 
-	if style == GOOGLE:
+	if style == BAIDU:
+		write_baidu_docstring_args(args, snip)
+	elif style == GOOGLE:
 		write_google_docstring_args(args, snip)
 	elif style == NUMPY:
 		write_numpy_docstring_args(args, snip)
 	else:
 		for arg in args:
 			snip += format_arg(arg, style)
+
+
+def write_baidu_docstring_args(args, snip):
+	snip += "Args:"
+	snip.shift()
+	for arg in args:
+		snip += format_arg(arg, GOOGLE)
+	snip.unshift()
+	snip.rv += '\n' + snip.mkline('', indent='')
 
 
 def write_google_docstring_args(args, snip):
@@ -216,14 +240,12 @@ def write_numpy_docstring_args(args, snip):
 	snip.rv += '\n' + snip.mkline('', indent='')
 
 
-def write_init_body(args, parents, snip):
+def write_init_body(args, name, parents, snip):
+	name = name.strip()
 	parents = [p.strip() for p in parents.split(",")]
-	parents = [p for p in parents if p != 'object']
 
-	for p in parents:
-		snip += p + ".__init__(self)"
-
-	if parents:
+	if len(parents) > 0:
+		snip += "super(%s, self).__init__()" % (name.strip())
 		snip.rv += '\n' + snip.mkline('', indent='')
 
 	for arg in args:
@@ -265,7 +287,7 @@ def write_function_docstring(t, snip):
 		snip += 'NULL'
 	else:
 		snip += format_raise(style)
-	snip.rv += '\n' + snip.mkline('', indent='')
+	snip.rv += '' + snip.mkline('', indent='')
 	snip += triple_quotes(snip)
 
 def get_dir_and_file_name(snip):
@@ -291,10 +313,10 @@ args = get_args(t[4])
 
 write_docstring_args(args, snip)
 if args:
-	snip.rv += '\n' + snip.mkline('', indent='')
+	snip.rv += snip.mkline('', indent='')
 	snip += '{0}'.format(triple_quotes(snip))
 
-write_init_body(args, t[2], snip)
+write_init_body(args, t[1], t[2], snip)
 `
 		$0
 endsnippet
@@ -321,7 +343,7 @@ if args:
 	snip.rv += '\n' + snip.mkline('', indent='')
 	snip += triple_quotes(snip)
 
-write_init_body(args, t[2], snip)
+write_init_body(args, t[1], t[2], snip)
 `
 		$0
 endsnippet
@@ -779,19 +801,20 @@ snippet log
 endsnippet
 
 
-snippet args
-from argparse import ArgumentParser
-arg_parser = ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-							description="${1:description}")
-arg_parser.add_argument("input", nargs="?", help="input file path")
-arg_parser.add_argument("-o", "--output", dest="output", help="output file path")
+snippet args "" b
+import argparse
+arg_parser = ArgumentParser(description="${1:description}")
+arg_parser.add_argument("input", nargs="?", type=argparse.FileType('r'), default=sys.stdin,
+						help="input file path")
+arg_parser.add_argument("-o", "--output", type=argparse.FileType('w'), default=sys.stdout,
+						help="output file path")
 args = arg_parser.parse_args()
 ${2}
 endsnippet
 
 
 snippet env
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 ##########################################################
 # Copyright (c) `!v strftime("%Y")` Baidu.com, Inc. All Rights Reserved #
@@ -808,28 +831,31 @@ import sys
 import os
 import traceback
 import logging
+import json
 
 `!p snip.rv = basic_log()`
 
 if __name__ == "__main__":
-	from argparse import ArgumentParser
+	import argparse
 	try:
-		arg_parser = ArgumentParser(description="$1")
-		arg_parser.add_argument("input", nargs="?", help="input file path")
-		arg_parser.add_argument("-o", "--output", dest="output", help="output file path")
+		arg_parser = argparse.ArgumentParser(description="$1")
+		arg_parser.add_argument("input", nargs="?", type=argparse.FileType('r'), default=sys.stdin,
+								help="input file path")
+		arg_parser.add_argument("-o", "--output", type=argparse.FileType('w'), default=sys.stdout,
+								help="output file path")
 		args = arg_parser.parse_args()
 
 		${2}
 	except Exception as e:
 		traceback.print_exc()
-		logging.critical(traceback.format_exc())
+		#logging.critical(traceback.format_exc())
 		exit(-1)
 
 endsnippet
 
 
 snippet lib
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 ##########################################################
 # Copyright (c) `!v strftime("%Y")` Baidu.com, Inc. All Rights Reserved #
@@ -846,6 +872,7 @@ import sys
 import os
 import traceback
 import logging
+import json
 
 ${2}
 
@@ -1049,7 +1076,7 @@ if __name__ == "__main__":
 endsnippet
 
 snippet utenv
-#!/usr/bin/env ${1:python}
+#!/usr/bin/env ${1:python3}
 # -*- coding:utf8 -*-
 ##########################################################
 # Copyright (c) `!v strftime("%Y")` Baidu.com, Inc. All Rights Reserved #
@@ -1155,6 +1182,17 @@ snippet imdd
 from collections import defaultdict
 endsnippet
 
+snippet imnp
+import numpy as np
+endsnippet
+
+snippet impf
+from paddle import fluid
+endsnippet
+
+snippet impl
+from paddle.fluid import layers
+endsnippet
 
 
 # vim:ft=snippets:

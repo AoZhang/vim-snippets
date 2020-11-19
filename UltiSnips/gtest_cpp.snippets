@@ -2,7 +2,7 @@ snippet ut
 
 #include <gtest/gtest.h>
 
-class ${1:`!v substitute(substitute(vim_snippets#Filename('$1','TestClassName'),'^.','\u&',''), '_\(\w\)', '\u\1', 'g')`}: public ::testing::Test  {
+class ${1:`!v substitute(substitute(vim_snippets#Filename('$1','TestClassName'),'^.','\u&',''), '_\(\w\)', '\u\1', 'g')`} : public ::testing::Test  {
 public:
 	$1() {}
 	virtual ~$1() {}
@@ -39,99 +39,146 @@ TEST_F(${1:`!v substitute(substitute(vim_snippets#Filename('$1','TestClassName')
 endsnippet
 
 snippet astrue "GTest Assersion: ASSERT_TRUE"
-ASSERT_TRUE(${1:checked value})
+ASSERT_TRUE(${1:checked value});
 endsnippet
 
 snippet asfalse "GTest Assersion: ASSERT_FALSE"
-ASSERT_FALSE(${1:checked value})
+ASSERT_FALSE(${1:checked value});
 endsnippet
 
 snippet aseq "GTest Assersion: ASSERT_EQ"
-ASSERT_EQ(${1:ground true}, ${2:checked value})
+ASSERT_EQ(${1:ground true}, ${2:checked value});
 endsnippet
 
 snippet asge "GTest Assersion: ASSERT_GE"
-ASSERT_GE(${1:ground true}, ${2:checked value})
+ASSERT_GE(${1:ground true}, ${2:checked value});
 endsnippet
 
 snippet asgt "GTest Assersion: ASSERT_GT"
-ASSERT_GT(${1:ground true}, ${2:checked value})
+ASSERT_GT(${1:ground true}, ${2:checked value});
 endsnippet
 
 snippet asle "GTest Assersion: ASSERT_LE"
-ASSERT_LE(${1:ground true}, ${2:checked value})
+ASSERT_LE(${1:ground true}, ${2:checked value});
 endsnippet
 
 snippet aslt "GTest Assersion: ASSERT_LT"
-ASSERT_LT(${1:ground true}, ${2:checked value})
+ASSERT_LT(${1:ground true}, ${2:checked value});
 endsnippet
 
 snippet asne "GTest Assersion: ASSERT_NE"
-ASSERT_NE(${1:ground true}, ${2:checked value})
+ASSERT_NE(${1:ground true}, ${2:checked value});
 endsnippet
 
 snippet asstrcaseeq "GTest Assersion: ASSERT_STRCASEEQ"
-ASSERT_STRCASEEQ(${1:ground true}, ${2:checked value})
+ASSERT_STRCASEEQ(${1:ground true}, ${2:checked value});
 endsnippet
 
 snippet asstrcasene "GTest Assersion: ASSERT_STRCASENE"
-ASSERT_STRCASENE(${1:ground true}, ${2:checked value})
+ASSERT_STRCASENE(${1:ground true}, ${2:checked value});
 endsnippet
 
 snippet asstreq "GTest Assersion: ASSERT_STREQ"
-ASSERT_STREQ(${1:ground true}, ${2:checked value})
+ASSERT_STREQ(${1:ground true}, ${2:checked value});
 endsnippet
 
 snippet asstrne "GTest Assersion: ASSERT_STRNE"
-ASSERT_STRNE(${1:ground true}, ${2:checked value})
+ASSERT_STRNE(${1:ground true}, ${2:checked value});
 endsnippet
 
 snippet extrue "GTest Assersion: EXPECT_TRUE"
-EXPECT_TRUE(${1:checked value})
+EXPECT_TRUE(${1:checked value});
 endsnippet
 
 snippet exfalse "GTest Assersion: EXPECT_FALSE"
-EXPECT_FALSE(${1:checked value})
+EXPECT_FALSE(${1:checked value});
 endsnippet
 
 snippet exeq "GTest Assersion: EXPECT_EQ"
-EXPECT_EQ(${1:ground true}, ${2:checked value})
+EXPECT_EQ(${1:ground true}, ${2:checked value});
 endsnippet
 
 snippet exge "GTest Assersion: EXPECT_GE"
-EXPECT_GE(${1:ground true}, ${2:checked value})
+EXPECT_GE(${1:ground true}, ${2:checked value});
 endsnippet
 
 snippet exgt "GTest Assersion: EXPECT_GT"
-EXPECT_GT(${1:ground true}, ${2:checked value})
+EXPECT_GT(${1:ground true}, ${2:checked value});
 endsnippet
 
 snippet exle "GTest Assersion: EXPECT_LE"
-EXPECT_LE(${1:ground true}, ${2:checked value})
+EXPECT_LE(${1:ground true}, ${2:checked value});
 endsnippet
 
 snippet exlt "GTest Assersion: EXPECT_LT"
-EXPECT_LT(${1:ground true}, ${2:checked value})
+EXPECT_LT(${1:ground true}, ${2:checked value});
 endsnippet
 
 snippet exne "GTest Assersion: EXPECT_NE"
-EXPECT_NE(${1:ground true}, ${2:checked value})
+EXPECT_NE(${1:ground true}, ${2:checked value});
 endsnippet
 
 snippet exstrcaseeq "GTest Assersion: EXPECT_STRCASEEQ"
-EXPECT_STRCASEEQ(${1:ground true}, ${2:checked value})
+EXPECT_STRCASEEQ(${1:ground true}, ${2:checked value});
 endsnippet
 
 snippet exstrcasene "GTest Assersion: EXPECT_STRCASENE"
-EXPECT_STRCASENE(${1:ground true}, ${2:checked value})
+EXPECT_STRCASENE(${1:ground true}, ${2:checked value});
 endsnippet
 
 snippet exstreq "GTest Assersion: EXPECT_STREQ"
-EXPECT_STREQ(${1:ground true}, ${2:checked value})
+EXPECT_STREQ(${1:ground true}, ${2:checked value});
 endsnippet
 
 snippet exstrne "GTest Assersion: EXPECT_STRNE"
-EXPECT_STRNE(${1:ground true}, ${2:checked value})
+EXPECT_STRNE(${1:ground true}, ${2:checked value});
 endsnippet
 
+snippet true "GTest Assersion: EXPECT_TRUE"
+EXPECT_TRUE(${1:checked value});
+endsnippet
+
+snippet false "GTest Assersion: EXPECT_FALSE"
+EXPECT_FALSE(${1:checked value});
+endsnippet
+
+snippet eq "GTest Assersion: EXPECT_EQ"
+EXPECT_EQ(${1:ground true}, ${2:checked value});
+endsnippet
+
+snippet ge "GTest Assersion: EXPECT_GE"
+EXPECT_GE(${1:ground true}, ${2:checked value});
+endsnippet
+
+snippet gt "GTest Assersion: EXPECT_GT"
+EXPECT_GT(${1:ground true}, ${2:checked value});
+endsnippet
+
+snippet le "GTest Assersion: EXPECT_LE"
+EXPECT_LE(${1:ground true}, ${2:checked value});
+endsnippet
+
+snippet lt "GTest Assersion: EXPECT_LT"
+EXPECT_LT(${1:ground true}, ${2:checked value});
+endsnippet
+
+snippet ne "GTest Assersion: EXPECT_NE"
+EXPECT_NE(${1:ground true}, ${2:checked value});
+endsnippet
+
+snippet strcaseeq "GTest Assersion: EXPECT_STRCASEEQ"
+EXPECT_STRCASEEQ(${1:ground true}, ${2:checked value});
+endsnippet
+
+snippet strcasene "GTest Assersion: EXPECT_STRCASENE"
+EXPECT_STRCASENE(${1:ground true}, ${2:checked value});
+endsnippet
+
+snippet streq "GTest Assersion: EXPECT_STREQ"
+EXPECT_STREQ(${1:ground true}, ${2:checked value});
+endsnippet
+
+snippet strne "GTest Assersion: EXPECT_STRNE"
+EXPECT_STRNE(${1:ground true}, ${2:checked value});
+endsnippet
 
